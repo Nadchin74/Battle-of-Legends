@@ -328,7 +328,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: -8434258124677314382, guid: 0ea5dbf8066246d4284223db34c30888, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -360,6 +360,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BossController
   maxHealth: 100
   uiManager: {fileID: 956491310}
+  bossImageComponent: {fileID: 312206588}
+  normalPhoto: {fileID: -8434258124677314382, guid: 0ea5dbf8066246d4284223db34c30888, type: 3}
+  damagedPhoto: {fileID: -3377180954826713111, guid: 61b5ee07993a0104abfac557aa6064c1, type: 3}
 --- !u!1 &336330243
 GameObject:
   m_ObjectHideFlags: 0

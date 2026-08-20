@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI; // Обов'язково для роботи з картинками UI
 
 public class BossController : MonoBehaviour
 {
@@ -7,26 +8,37 @@ public class BossController : MonoBehaviour
     private int currentHealth;
 
     [Header("Посилання")]
-    public UIManager uiManager; // Посилання на скрипт інтерфейсу
+    public UIManager uiManager;
+    public Image bossImageComponent; // Посилання на компонент Image, який малює фото
+
+    [Header("Фази Боса (Фотографії)")]
+    public Sprite normalPhoto;  // Звичайне фото
+    public Sprite damagedPhoto; // Смішне фото (менше 50% здоров'я)
+
+    private bool isPhaseChanged = false; // Той самий прапорець оптимізації з GDD
 
     void Start()
     {
-        currentHealth = maxHealth; // На старті здоров'я повне
-        uiManager.SetupHealthBar(maxHealth); // Передаємо дані в інтерфейс
+        currentHealth = maxHealth;
+        uiManager.SetupHealthBar(maxHealth);
+        bossImageComponent.sprite = normalPhoto; // На старті ставимо звичайне фото
     }
 
-    // Ця функція викликається при кожному кліці по невидимій кнопці
     public void TakeDamage(int damageAmount)
     {
-        currentHealth -= damageAmount; // Віднімаємо здоров'я
+        currentHealth -= damageAmount;
 
-        // Не даємо здоров'ю впасти нижче нуля
-        if (currentHealth < 0)
+        if (currentHealth < 0) currentHealth = 0;
+
+        uiManager.UpdateHealthBar(currentHealth);
+
+        // Перевірка на зміну фази (здоров'я <= 50% і фаза ще не змінювалася)
+        if (currentHealth <= maxHealth / 2 && !isPhaseChanged)
         {
-            currentHealth = 0;
+            isPhaseChanged = true; // Перемикаємо прапорець
+            bossImageComponent.sprite = damagedPhoto; // Міняємо картинку
+            Debug.Log("Фаза змінена! Бос отримав по обличчю!");
         }
-
-        uiManager.UpdateHealthBar(currentHealth); // Оновлюємо смужку на екрані
 
         if (currentHealth == 0)
         {
