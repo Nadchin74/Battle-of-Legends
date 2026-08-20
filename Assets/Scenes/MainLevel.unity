@@ -358,12 +358,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c3bf68b708dff2488c1e3a0e51660ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossController
-  maxHealth: 100
+  bosses:
+  - bossName: "\u0414\u0440\u0443\u0433 1"
+    maxHealth: 100
+    normalPhoto: {fileID: -8434258124677314382, guid: 0ea5dbf8066246d4284223db34c30888, type: 3}
+    damagedPhoto: {fileID: -3377180954826713111, guid: 61b5ee07993a0104abfac557aa6064c1, type: 3}
+  - bossName: "\u0414\u0440\u0443\u0433 2"
+    maxHealth: 250
+    normalPhoto: {fileID: -7116410531632990824, guid: f25403faa0a1cd7499fb5882fa09c628, type: 3}
+    damagedPhoto: {fileID: -4742652393908235598, guid: 1882584f9237ab345a5b220aa4b18433, type: 3}
+  - bossName: "\u042F"
+    maxHealth: 500
+    normalPhoto: {fileID: 3202346543115985026, guid: 0fdde28d93d4b534c9ccf8dd794bb88b, type: 3}
+    damagedPhoto: {fileID: -5070892491148771470, guid: 49dd53ec01696f64e93d858795a6c58a, type: 3}
+  - bossName: "\u0422\u0440\u0456\u043E \u0411\u043E\u0441\u0441"
+    maxHealth: 1500
+    normalPhoto: {fileID: -308971263458261655, guid: 22b2cc30489c03b4b9f151e26175fd3c, type: 3}
+    damagedPhoto: {fileID: 1488074953269437706, guid: bcee2e9dc47ec3045a6efc88a194ddfa, type: 3}
   uiManager: {fileID: 956491310}
   bossImageComponent: {fileID: 312206588}
   damageTextPrefab: {fileID: 5215717270157498770, guid: 63d11f096a254304385f8c70286865ee, type: 3}
-  normalPhoto: {fileID: -8434258124677314382, guid: 0ea5dbf8066246d4284223db34c30888, type: 3}
-  damagedPhoto: {fileID: -3377180954826713111, guid: 61b5ee07993a0104abfac557aa6064c1, type: 3}
 --- !u!1 &336330243
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,11 +1,22 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
+
+[System.Serializable]
+public class BossData
+{
+    public string bossName = "Бос";
+    public int maxHealth = 100;
+    public Sprite normalPhoto;
+    public Sprite damagedPhoto;
+}
 
 public class BossController : MonoBehaviour
 {
-    [Header("Характеристики Боса")]
-    public int maxHealth = 100;
+    [Header("Список Усіх Босів")]
+    public List<BossData> bosses = new List<BossData>();
+    private int currentBossIndex = 0;
     private int currentHealth;
 
     [Header("Посилання")]
@@ -13,40 +24,49 @@ public class BossController : MonoBehaviour
     public Image bossImageComponent;
     public GameObject damageTextPrefab;
 
-    [Header("Фази Боса (Фотографії)")]
-    public Sprite normalPhoto;
-    public Sprite damagedPhoto;
-
     private bool isPhaseChanged = false;
     private Vector3 originalBossPosition;
     private Coroutine shakeCoroutine;
 
     void Start()
     {
-        currentHealth = maxHealth;
-        uiManager.SetupHealthBar(maxHealth);
-        bossImageComponent.sprite = normalPhoto;
         originalBossPosition = bossImageComponent.transform.localPosition;
+        if (bosses.Count > 0)
+        {
+            LoadBoss(0);
+        }
+    }
+
+    void LoadBoss(int index)
+    {
+        currentBossIndex = index;
+        BossData boss = bosses[currentBossIndex];
+
+        currentHealth = boss.maxHealth;
+        isPhaseChanged = false;
+
+        bossImageComponent.sprite = boss.normalPhoto;
+        uiManager.SetupHealthBar(boss.maxHealth);
     }
 
     public void TakeDamage(int damageAmount)
     {
+        if (currentBossIndex >= bosses.Count) return;
+
         currentHealth -= damageAmount;
         if (currentHealth < 0) currentHealth = 0;
 
         uiManager.UpdateHealthBar(currentHealth);
 
-        // Створюємо текст урону прямо над босом із невеликим випадковим розкидом
+        // Текст урону
         if (damageTextPrefab != null)
         {
             GameObject textObj = Instantiate(damageTextPrefab, transform.parent);
-
-            // Випадковий зсув, щоб цифри не накладалися одна на одну
             Vector3 randomOffset = new Vector3(Random.Range(-50f, 50f), Random.Range(-50f, 50f), 0);
             textObj.transform.position = bossImageComponent.transform.position + randomOffset;
         }
 
-        // Запускаємо тряску
+        // Тряска
         if (bossImageComponent != null)
         {
             if (shakeCoroutine != null)
@@ -57,29 +77,45 @@ public class BossController : MonoBehaviour
             shakeCoroutine = StartCoroutine(ShakeBossImage(0.1f, 15f));
         }
 
-        // Перевірка фази
-        if (currentHealth <= maxHealth / 2 && !isPhaseChanged)
+        // Зміна фази при 50% HP
+        BossData currentBoss = bosses[currentBossIndex];
+        if (currentHealth <= currentBoss.maxHealth / 2 && !isPhaseChanged)
         {
             isPhaseChanged = true;
-            bossImageComponent.sprite = damagedPhoto;
+            bossImageComponent.sprite = currentBoss.damagedPhoto;
+        }
+
+        // Перевірка на смерть боса
+        if (currentHealth <= 0)
+        {
+            NextBoss();
+        }
+    }
+
+    void NextBoss()
+    {
+        currentBossIndex++;
+        if (currentBossIndex < bosses.Count)
+        {
+            LoadBoss(currentBossIndex);
+        }
+        else
+        {
+            Debug.Log("Всі боси переможені! Фінальна перемога!");
         }
     }
 
     private IEnumerator ShakeBossImage(float duration, float magnitude)
     {
         float elapsed = 0.0f;
-
         while (elapsed < duration)
         {
             float x = Random.Range(-1f, 1f) * magnitude;
             float y = Random.Range(-1f, 1f) * magnitude;
-
             bossImageComponent.transform.localPosition = new Vector3(originalBossPosition.x + x, originalBossPosition.y + y, originalBossPosition.z);
-
             elapsed += Time.deltaTime;
             yield return null;
         }
-
         bossImageComponent.transform.localPosition = originalBossPosition;
         shakeCoroutine = null;
     }
