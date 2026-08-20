@@ -1,5 +1,6 @@
 using UnityEngine;
-using UnityEngine.UI; // Обов'язково для роботи з картинками UI
+using UnityEngine.UI;
+using System.Collections; // Це потрібно для таймерів (корутин)
 
 public class BossController : MonoBehaviour
 {
@@ -9,40 +10,61 @@ public class BossController : MonoBehaviour
 
     [Header("Посилання")]
     public UIManager uiManager;
-    public Image bossImageComponent; // Посилання на компонент Image, який малює фото
+    public Image bossImageComponent;
 
     [Header("Фази Боса (Фотографії)")]
-    public Sprite normalPhoto;  // Звичайне фото
-    public Sprite damagedPhoto; // Смішне фото (менше 50% здоров'я)
+    public Sprite normalPhoto;
+    public Sprite damagedPhoto;
 
-    private bool isPhaseChanged = false; // Той самий прапорець оптимізації з GDD
+    private bool isPhaseChanged = false;
+    private Vector3 originalBossPosition; // Тут ми запам'ятаємо координати боса
 
     void Start()
     {
         currentHealth = maxHealth;
         uiManager.SetupHealthBar(maxHealth);
-        bossImageComponent.sprite = normalPhoto; // На старті ставимо звичайне фото
+        bossImageComponent.sprite = normalPhoto;
+
+        // Запам'ятовуємо нульову точку боса на старті
+        originalBossPosition = bossImageComponent.transform.localPosition;
     }
 
     public void TakeDamage(int damageAmount)
     {
         currentHealth -= damageAmount;
-
         if (currentHealth < 0) currentHealth = 0;
 
         uiManager.UpdateHealthBar(currentHealth);
 
-        // Перевірка на зміну фази (здоров'я <= 50% і фаза ще не змінювалася)
+        // Запускаємо тряску САМЕ БОСА (на 15 пікселів в сторони)
+        StopAllCoroutines(); // Зупиняємо попередню тряску, якщо швидко клікаємо
+        StartCoroutine(ShakeBossImage(0.1f, 15f));
+
         if (currentHealth <= maxHealth / 2 && !isPhaseChanged)
         {
-            isPhaseChanged = true; // Перемикаємо прапорець
-            bossImageComponent.sprite = damagedPhoto; // Міняємо картинку
-            Debug.Log("Фаза змінена! Бос отримав по обличчю!");
+            isPhaseChanged = true;
+            bossImageComponent.sprite = damagedPhoto;
+        }
+    }
+
+    // Та сама проста математична функція тряски з вашого GDD
+    private IEnumerator ShakeBossImage(float duration, float magnitude)
+    {
+        float elapsed = 0.0f;
+
+        while (elapsed < duration)
+        {
+            // Зсуваємо фотографію на випадкові пікселі
+            float x = Random.Range(-1f, 1f) * magnitude;
+            float y = Random.Range(-1f, 1f) * magnitude;
+
+            bossImageComponent.transform.localPosition = new Vector3(originalBossPosition.x + x, originalBossPosition.y + y, originalBossPosition.z);
+
+            elapsed += Time.deltaTime;
+            yield return null;
         }
 
-        if (currentHealth == 0)
-        {
-            Debug.Log("Бос переможений! Перехід у магазин...");
-        }
+        // Жорстко повертаємо у вихідну нульову точку
+        bossImageComponent.transform.localPosition = originalBossPosition;
     }
 } 
