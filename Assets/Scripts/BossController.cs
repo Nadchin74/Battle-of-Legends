@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections; // Це потрібно для таймерів (корутин)
+using System.Collections;
 
 public class BossController : MonoBehaviour
 {
@@ -11,21 +11,21 @@ public class BossController : MonoBehaviour
     [Header("Посилання")]
     public UIManager uiManager;
     public Image bossImageComponent;
+    public GameObject damageTextPrefab;
 
     [Header("Фази Боса (Фотографії)")]
     public Sprite normalPhoto;
     public Sprite damagedPhoto;
 
     private bool isPhaseChanged = false;
-    private Vector3 originalBossPosition; // Тут ми запам'ятаємо координати боса
+    private Vector3 originalBossPosition;
+    private Coroutine shakeCoroutine;
 
     void Start()
     {
         currentHealth = maxHealth;
         uiManager.SetupHealthBar(maxHealth);
         bossImageComponent.sprite = normalPhoto;
-
-        // Запам'ятовуємо нульову точку боса на старті
         originalBossPosition = bossImageComponent.transform.localPosition;
     }
 
@@ -36,10 +36,28 @@ public class BossController : MonoBehaviour
 
         uiManager.UpdateHealthBar(currentHealth);
 
-        // Запускаємо тряску САМЕ БОСА (на 15 пікселів в сторони)
-        StopAllCoroutines(); // Зупиняємо попередню тряску, якщо швидко клікаємо
-        StartCoroutine(ShakeBossImage(0.1f, 15f));
+        // Створюємо текст урону прямо над босом із невеликим випадковим розкидом
+        if (damageTextPrefab != null)
+        {
+            GameObject textObj = Instantiate(damageTextPrefab, transform.parent);
 
+            // Випадковий зсув, щоб цифри не накладалися одна на одну
+            Vector3 randomOffset = new Vector3(Random.Range(-50f, 50f), Random.Range(-50f, 50f), 0);
+            textObj.transform.position = bossImageComponent.transform.position + randomOffset;
+        }
+
+        // Запускаємо тряску
+        if (bossImageComponent != null)
+        {
+            if (shakeCoroutine != null)
+            {
+                StopCoroutine(shakeCoroutine);
+                bossImageComponent.transform.localPosition = originalBossPosition;
+            }
+            shakeCoroutine = StartCoroutine(ShakeBossImage(0.1f, 15f));
+        }
+
+        // Перевірка фази
         if (currentHealth <= maxHealth / 2 && !isPhaseChanged)
         {
             isPhaseChanged = true;
@@ -47,14 +65,12 @@ public class BossController : MonoBehaviour
         }
     }
 
-    // Та сама проста математична функція тряски з вашого GDD
     private IEnumerator ShakeBossImage(float duration, float magnitude)
     {
         float elapsed = 0.0f;
 
         while (elapsed < duration)
         {
-            // Зсуваємо фотографію на випадкові пікселі
             float x = Random.Range(-1f, 1f) * magnitude;
             float y = Random.Range(-1f, 1f) * magnitude;
 
@@ -64,7 +80,7 @@ public class BossController : MonoBehaviour
             yield return null;
         }
 
-        // Жорстко повертаємо у вихідну нульову точку
         bossImageComponent.transform.localPosition = originalBossPosition;
+        shakeCoroutine = null;
     }
 } 

@@ -361,6 +361,7 @@ MonoBehaviour:
   maxHealth: 100
   uiManager: {fileID: 956491310}
   bossImageComponent: {fileID: 312206588}
+  damageTextPrefab: {fileID: 5215717270157498770, guid: 63d11f096a254304385f8c70286865ee, type: 3}
   normalPhoto: {fileID: -8434258124677314382, guid: 0ea5dbf8066246d4284223db34c30888, type: 3}
   damagedPhoto: {fileID: -3377180954826713111, guid: 61b5ee07993a0104abfac557aa6064c1, type: 3}
 --- !u!1 &336330243
@@ -893,7 +894,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
   m_UseReflectionProbes: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
