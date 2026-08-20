@@ -8,6 +8,7 @@ public class BossData
 {
     public string bossName = "Бос";
     public int maxHealth = 100;
+    public int rewardCoins = 50; // Нагорода за перемогу над цим босом
     public Sprite normalPhoto;
     public Sprite damagedPhoto;
 }
@@ -18,6 +19,10 @@ public class BossController : MonoBehaviour
     public List<BossData> bosses = new List<BossData>();
     private int currentBossIndex = 0;
     private int currentHealth;
+
+    [Header("Економіка")]
+    public int currentCoins = 0;
+    public int coinsPerClick = 1;
 
     [Header("Посилання")]
     public UIManager uiManager;
@@ -31,6 +36,10 @@ public class BossController : MonoBehaviour
     void Start()
     {
         originalBossPosition = bossImageComponent.transform.localPosition;
+
+        if (uiManager != null)
+            uiManager.UpdateCoinsText(currentCoins);
+
         if (bosses.Count > 0)
         {
             LoadBoss(0);
@@ -55,6 +64,10 @@ public class BossController : MonoBehaviour
 
         currentHealth -= damageAmount;
         if (currentHealth < 0) currentHealth = 0;
+
+        // Нараховуємо монети за кожен клік
+        currentCoins += coinsPerClick;
+        uiManager.UpdateCoinsText(currentCoins);
 
         uiManager.UpdateHealthBar(currentHealth);
 
@@ -88,6 +101,10 @@ public class BossController : MonoBehaviour
         // Перевірка на смерть боса
         if (currentHealth <= 0)
         {
+            // Бонусні монети за перемогу
+            currentCoins += currentBoss.rewardCoins;
+            uiManager.UpdateCoinsText(currentCoins);
+
             NextBoss();
         }
     }

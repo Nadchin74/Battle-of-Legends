@@ -1,21 +1,35 @@
 using UnityEngine;
-using UnityEngine.UI; // Обов'язково для роботи з UI
+using UnityEngine.UI;
+using TMPro; // Для роботи з TextMeshPro
 
 public class UIManager : MonoBehaviour
 {
-    [Header("UI Елементи")]
-    public Slider healthBar; // Посилання на нашу смужку здоров'я
+    public Slider healthSlider;
+    public TextMeshProUGUI coinsText; // Посилання на текст монет
 
-    // Ця функція налаштовує смужку на старті рівня
     public void SetupHealthBar(int maxHealth)
     {
-        healthBar.maxValue = maxHealth;
-        healthBar.value = maxHealth;
+        if (healthSlider != null)
+        {
+            healthSlider.maxValue = maxHealth;
+            healthSlider.value = maxHealth;
+        }
     }
 
-    // Ця функція оновлює смужку після удару
     public void UpdateHealthBar(int currentHealth)
     {
-        healthBar.value = currentHealth;
+        if (healthSlider != null)
+        {
+            healthSlider.value = currentHealth;
+        }
+    }
+
+    // Нова функція оновлення лічильника монет
+    public void UpdateCoinsText(int coins)
+    {
+        if (coinsText != null)
+        {
+            coinsText.text = $"🪙 {coins}";
+        }
     }
 } 
